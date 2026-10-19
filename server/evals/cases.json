@@ -1,0 +1,84 @@
+{
+  "description": "Eval cases for an agent using the DreamCare MCP tools. Data: the fictional demo user from `python -m dreamcare_mcp.seed` (1 Metformina 08:00 daily, 2 Losartán 20:00 daily, 3 Vitamina D 12:30 Mon/Wed/Fri), time zone America/Costa_Rica (UTC-6). 2026-10-19 is a Monday.",
+  "cases": [
+    {
+      "id": "due-now-morning",
+      "utterance": "¿Qué me toca tomar ahora?",
+      "now_utc": "2026-10-19T14:00:00+00:00",
+      "required_calls": [{ "tool": "get_due_medications" }],
+      "forbidden_tools": ["confirm_intake"],
+      "expected_mentions": ["Metformina"],
+      "forbidden_mentions": ["Losartán"]
+    },
+    {
+      "id": "nothing-due",
+      "utterance": "¿Tengo que tomar algo ahorita?",
+      "now_utc": "2026-10-19T16:00:00+00:00",
+      "required_calls": [{ "tool": "get_due_medications" }],
+      "forbidden_tools": ["confirm_intake"],
+      "forbidden_mentions": ["Metformina", "Losartán", "Vitamina D"]
+    },
+    {
+      "id": "list-all",
+      "utterance": "¿Cuáles son todas mis pastillas?",
+      "now_utc": "2026-10-19T16:00:00+00:00",
+      "required_calls": [{ "tool": "list_medications" }],
+      "forbidden_tools": ["confirm_intake"],
+      "expected_mentions": ["Metformina", "Losartán", "Vitamina D"]
+    },
+    {
+      "id": "confirm-taken",
+      "context": "The assistant just reminded the user to take Metformina (id 1), scheduled at 08:00.",
+      "utterance": "Sí, ya me la tomé.",
+      "now_utc": "2026-10-19T14:05:00+00:00",
+      "required_calls": [{ "tool": "confirm_intake", "arguments": { "medication_id": 1, "status": "taken" } }],
+      "expected_mentions": ["taken"]
+    },
+    {
+      "id": "confirm-missed",
+      "context": "The assistant just reminded the user to take Losartán (id 2), scheduled at 20:00.",
+      "utterance": "No, todavía no me la he tomado.",
+      "now_utc": "2026-10-20T02:05:00+00:00",
+      "required_calls": [{ "tool": "confirm_intake", "arguments": { "medication_id": 2, "status": "missed" } }],
+      "expected_mentions": ["missed"]
+    },
+    {
+      "id": "confirm-unclear",
+      "context": "The assistant just reminded the user to take Metformina (id 1), scheduled at 08:00.",
+      "utterance": "Eh... no me acuerdo, creo que sí, o tal vez fue ayer.",
+      "now_utc": "2026-10-19T14:05:00+00:00",
+      "required_calls": [{ "tool": "confirm_intake", "arguments": { "medication_id": 1, "status": "unclear" } }],
+      "expected_mentions": ["unclear"]
+    },
+    {
+      "id": "weekday-not-scheduled",
+      "utterance": "¿Me toca la vitamina D ahorita?",
+      "now_utc": "2026-10-20T18:30:00+00:00",
+      "required_calls": [{ "tool": "get_due_medications" }],
+      "forbidden_tools": ["confirm_intake"],
+      "forbidden_mentions": ["Vitamina D"]
+    },
+    {
+      "id": "weekday-scheduled",
+      "utterance": "¿Me toca la vitamina D ahorita?",
+      "now_utc": "2026-10-21T18:30:00+00:00",
+      "required_calls": [{ "tool": "get_due_medications" }],
+      "forbidden_tools": ["confirm_intake"],
+      "expected_mentions": ["Vitamina D"]
+    },
+    {
+      "id": "question-is-not-a-confirmation",
+      "utterance": "¿Ya me tomé la metformina hoy?",
+      "now_utc": "2026-10-19T16:00:00+00:00",
+      "required_calls": [],
+      "forbidden_tools": ["confirm_intake"]
+    },
+    {
+      "id": "off-topic",
+      "utterance": "¿Va a llover mañana?",
+      "now_utc": "2026-10-19T16:00:00+00:00",
+      "required_calls": [],
+      "forbidden_tools": ["confirm_intake"]
+    }
+  ]
+}
