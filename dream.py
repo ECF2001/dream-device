@@ -13,16 +13,32 @@ from collections import deque
 import pvporcupine
 import pyaudio
 import requests
+from dotenv import load_dotenv
 from pydub import AudioSegment
 
 # =============================================================================
 # Configuration
 # =============================================================================
 
-ACCESS_KEY = "REMOVED_PICOVOICE_KEY"
+# Secrets and per-device settings come from the environment (or a local .env file)
+load_dotenv()
+
+ACCESS_KEY = os.environ.get("PICOVOICE_ACCESS_KEY", "").strip()
 
 # API endpoints
-API_BASE_URL       = "https://dreamincode-abgjgwgfckbqergq.eastus-01.azurewebsites.net"
+API_BASE_URL       = os.environ.get("API_BASE_URL", "").strip().rstrip("/")
+
+# Fail fast with a clear message instead of a confusing error later on
+_missing = [name for name, value in (
+    ("PICOVOICE_ACCESS_KEY", ACCESS_KEY),
+    ("API_BASE_URL", API_BASE_URL),
+) if not value]
+if _missing:
+    raise RuntimeError(
+        f"Missing required setting(s): {', '.join(_missing)}. "
+        "Copy .env.example to .env and fill in the values."
+    )
+
 VOICE_MCP_URL      = f"{API_BASE_URL}/voice_mcp"
 REMINDER_TTS_URL   = f"{API_BASE_URL}/reminder_tts"   # manual/auto reminder
 TTS_URL            = f"{API_BASE_URL}/tts"            # free-form TTS
