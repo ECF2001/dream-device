@@ -1,8 +1,8 @@
 """Tests for dreamcare_mcp.repository (SQLite data access).
 
 Fixtures used here:
-- `repo`: a Repository on a brand-new in-memory database. Every test gets its own,
-  so tests can't affect each other, and nothing touches the disk.
+- `repo` (from conftest.py): a Repository on a brand-new in-memory database. Every
+  test gets its own, so tests can't affect each other, and nothing touches the disk.
 - `user_id` / `other_user_id`: users created in that database. A fixture can use
   another fixture just by naming it as a parameter.
 """
@@ -11,18 +11,10 @@ import datetime as dt
 
 import pytest
 
-from dreamcare_mcp.repository import Repository, UnknownMedicationError, connect, init_db
+from dreamcare_mcp.repository import UnknownMedicationError
 from dreamcare_mcp.schedule import Medication
 
 RECORDED_AT = dt.datetime(2026, 10, 19, 14, 0, tzinfo=dt.timezone.utc)
-
-
-@pytest.fixture
-def repo():
-    conn = connect(":memory:")
-    init_db(conn)
-    yield Repository(conn)   # the test runs here
-    conn.close()             # cleanup runs after the test, even if it failed
 
 
 @pytest.fixture

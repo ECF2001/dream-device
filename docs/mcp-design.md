@@ -1,6 +1,6 @@
 # Design: DreamCare MCP server
 
-Status: **draft for review** (2026-10-19). Nothing here is built yet.
+Status: **approved** (2026-10-19). Steps 1 to 4 are built; see PROGRESS.md.
 
 ## Goal
 
@@ -83,7 +83,7 @@ server/
     __init__.py
     schedule.py           # pure logic: which medications are due (no database, no clock)
     repository.py         # SQLite access
-    server.py             # FastMCP server: defines the three tools
+    server.py             # MCPServer: defines the three tools
   tests/
     test_schedule.py
     test_repository.py
@@ -93,7 +93,7 @@ server/
 
 The most important rule: **`schedule.py` is pure.** It receives the medications and the current time as arguments. That makes the trickiest logic (days of week, date ranges, midnight) easy to test with no database and no real clock.
 
-Built with the official Python MCP SDK (`mcp` package, `FastMCP`).
+Built with the official Python MCP SDK (`mcp` 2.x, `MCPServer`; in 1.x this class was called `FastMCP`).
 
 ## Testing plan (pytest)
 
@@ -117,6 +117,6 @@ Steps 1 to 5 are free and run on my laptop. Step 6 uses Azure (hosting plus mode
 
 ## Open questions
 
-- Keep tool output in Spanish (the users speak Spanish) or English? Proposal: field names in English, medication text as stored.
-- Should `get_due_medications` hide medications already confirmed as `taken` in the current window? Proposal: yes, otherwise the device repeats reminders.
+- ~~Spanish or English tool output?~~ Decided: field names in English, medication text as stored.
+- ~~Hide doses already confirmed as `taken`?~~ Decided: yes. A dose is hidden when a `taken` intake was recorded at or after the start of its window; `missed` and `unclear` do not hide it.
 - Where should Step 6 host the server: Azure Container Apps or Azure Functions? Decide later, after checking the current Microsoft templates and pricing.

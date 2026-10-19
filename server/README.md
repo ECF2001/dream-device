@@ -21,6 +21,44 @@ python -m dreamcare_mcp.seed --reset    # delete and recreate it
 
 The demo data is fictional.
 
+## Run the MCP server
+
+The server speaks MCP over stdio: an MCP client starts it as a subprocess. It serves one user, set with `DREAMCARE_USER_ID` (the seeded demo user is `1`). `DREAMCARE_DB` picks the database file (default `dreamcare.db`).
+
+### Try it in MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) is the official browser UI for calling a server's tools by hand. It needs Node.js. From the `server/` folder, in Git Bash:
+
+```bash
+npx @modelcontextprotocol/inspector -e DREAMCARE_USER_ID=1 -e DREAMCARE_DB="$PWD/dreamcare.db" .venv/Scripts/python -m dreamcare_mcp.server
+```
+
+### Use it from Claude Desktop
+
+Add this to `claude_desktop_config.json`, with your real paths:
+
+```json
+{
+  "mcpServers": {
+    "dreamcare": {
+      "command": "C:\\path\\to\\Dream-Device\\server\\.venv\\Scripts\\dreamcare-mcp.exe",
+      "env": {
+        "DREAMCARE_USER_ID": "1",
+        "DREAMCARE_DB": "C:\\path\\to\\Dream-Device\\server\\dreamcare.db"
+      }
+    }
+  }
+}
+```
+
+### Tools
+
+| Tool | Arguments | Returns |
+|---|---|---|
+| `get_due_medications` | `window_minutes` (1–120, default 15) | Doses due now in the user's local time, minus those already confirmed as taken |
+| `list_medications` | `include_inactive` (default false) | All medications with their schedule |
+| `confirm_intake` | `medication_id`, `status` (`taken` / `missed` / `unclear`) | The recorded intake; writes to the database |
+
 ## Modules
 
 | Module | What it does |
@@ -28,3 +66,4 @@ The demo data is fictional.
 | `schedule.py` | Pure logic: which medications are due at a given local time |
 | `repository.py` | SQLite access: users, medications, intake log |
 | `seed.py` | Fills a database with fictional demo data |
+| `server.py` | The MCP server: the three tools, time zone conversion, stdio entry point |
