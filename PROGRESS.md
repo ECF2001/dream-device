@@ -39,7 +39,8 @@ Later:
   - [x] Step 1: `server/` skeleton, one passing test, GitHub Actions workflow (2026-10-19). The workflow has not run on GitHub yet; add the status badge once the repo is on my account.
   - [x] Step 2: `schedule.py`, test-first (2026-10-19). 14 tests: time window, inactive, weekdays, date range (parametrized), windows crossing midnight, sorting. Time zone conversion moves to the tools layer (step 4), where the user's zone is known.
   - [x] Step 3: `repository.py` (SQLite schema, users, medications, intake log) and `seed.py` (fictional demo data), with 17 tests using in-memory database and `tmp_path` fixtures (2026-10-19).
-  - [ ] Step 4: `server.py` with the three MCP tools (FastMCP); time zone conversion; try it with MCP Inspector.
+  - [x] Step 4: `server.py` with the three MCP tools on `MCPServer` (mcp 2.x), UTC-to-local time zone conversion, hiding doses already taken, stdio entry point (2026-10-19). 16 tests through an in-process MCP client; checked over real stdio with the SDK client. Still to do by hand: try it in MCP Inspector.
+  - [ ] Step 5: evaluation set (example questions with the expected tool calls).
 
 ## What I learned
 
@@ -61,4 +62,9 @@ Later:
 - **pytest fixtures.** A fixture prepares what a test needs (a fresh in-memory database); `yield` splits setup from cleanup; fixtures can use other fixtures (`user_id` uses `repo`). Built-ins like `tmp_path` and `capsys` give a temp folder and captured output.
 - **Mutation check.** When "red" was only "module missing", deliberately break the code (`AND` → `OR` in the ownership query) to prove the important test really fails.
 - **Data access boundary.** Only `repository.py` knows SQL; it converts text columns to Python types, enforces ownership (a user can't log intake on another user's medication), and never hides database errors.
+- **Check the library you actually installed.** mcp 2.x renamed `FastMCP` to `MCPServer`; a 10-line probe script confirmed the real API before writing code against it. Pin the major version (`mcp>=2.3,<3`).
+- **MCP tool design.** Pydantic return types give structured output; `ToolError` sends a message the model can act on, while other exceptions return a generic error (details stay in the server log). Typed arguments (`Literal`, `Field(ge=1, le=120)`) become the tool's input schema, so bad calls are rejected before my code runs.
+- **Dependency injection for time.** `create_server(repo, user_id, clock=...)` lets tests fix "now" to 14:00 UTC and prove the Costa Rica conversion (08:00 local).
+- **Threads and SQLite.** Sync tools run in a worker thread, but a SQLite connection belongs to the thread that opened it, so the tools are `async def`.
+- **stdout belongs to the protocol.** A stdio MCP server must print errors to stderr only.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.
