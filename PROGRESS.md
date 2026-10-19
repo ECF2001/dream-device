@@ -24,7 +24,8 @@ Phase 1 (safety and cleanup):
 - [x] Azure SQL: the server no longer exists (its name does not resolve in DNS, checked 2026-10-19), so the leaked database credentials are dead. The Picovoice key is dead with the deleted account.
 - [x] Backend: build the database connection string from `DB_*` variables; load `.env` at startup (2026-10-19, local branch `phase1/env-config` in DreamInCode-MCP).
 - [x] Backend: fixed `.env` format (values only). The connection test showed the server is gone.
-- [ ] Scan git history for secrets (gitleaks) and clean it before the first push to my own repo.
+- [x] Scanned git history for secrets and cleaned it (2026-10-19): one Picovoice key, replaced with `REMOVED_PICOVOICE_KEY` in all 64 commits using `git filter-repo`. No other secrets found. Backup bundle in `../backups/` (contains the old key: keep local, delete when no longer needed). Removed the `team` remote so old history can't come back by accident.
+- [ ] Create my personal GitHub repo, push, and see CI run.
 - [ ] English README with an architecture diagram; keep the Spanish one as `README.es.md`.
 - [ ] Ignore editor folders (`.vscode/`, `.idea/`) and `__pycache__/`.
 
@@ -46,4 +47,5 @@ Later:
 - **`pyproject.toml` and editable installs.** `pip install -e ".[dev]"` installs my package so tests import it like a real user would, plus the `dev` extras (pytest) that production doesn't need.
 - **A smoke test proves the pipeline, not the logic.** The first test only checks the package imports; its job is to show that install, test discovery and CI all work before real tests arrive.
 - **CI basics.** The workflow runs on push and pull request only when `server/` changes, tests three Python versions in a matrix, and has read-only permissions.
+- **Rewriting history.** `git filter-repo --replace-text` rewrites every commit, so all commit hashes change. Back up first (`git bundle`), verify afterwards, and only rewrite history nobody else depends on. It does not help for copies already public (the team repo), which is why rotation comes first.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.
