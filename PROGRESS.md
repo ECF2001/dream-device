@@ -9,6 +9,7 @@ Working log for the Dream Device improvement project. Newest entries on top.
 | 2026-10-19 | Replace Porcupine (Picovoice) with **openWakeWord** | The Picovoice account was deleted by Picovoice and cannot be reactivated. An open-source engine needs no account or key, so nothing can leak or expire. |
 | 2026-10-19 | Keeping the device working is **not** a priority right now | No deadline. Learning and clean design come first; the device may not run until the new wake word engine is in. |
 | 2026-10-19 | This repo becomes my personal repo | The original lives in the DreamInCode-CR org. The old remote is renamed `team`; a new GitHub repo under my account will become `origin` (not created yet). |
+| 2026-10-19 | Rebuild the medication backend as my own real **MCP server** (SQLite, test-first) instead of patching the team backend | Fully my own work, real Model Context Protocol, and the old Azure SQL server no longer exists anyway. |
 | 2026-10-19 | Backend (team code) will be copied into a `backend/` folder, clearly labeled | Keep a clear line between team code and my own work. |
 
 ## Done
@@ -19,9 +20,10 @@ Working log for the Dream Device improvement project. Newest entries on top.
 ## Next
 
 Phase 1 (safety and cleanup):
-- [ ] Rotate the leaked credentials: OpenAI key, Azure SQL password (if the server still exists). The Picovoice key is dead with the deleted account.
+- [ ] Revoke the leaked OpenAI key (from the old `DreamInCode/.env`). This is the only leaked secret that may still work.
+- [x] Azure SQL: the server no longer exists (its name does not resolve in DNS, checked 2026-10-19), so the leaked database credentials are dead. The Picovoice key is dead with the deleted account.
 - [x] Backend: build the database connection string from `DB_*` variables; load `.env` at startup (2026-10-19, local branch `phase1/env-config` in DreamInCode-MCP).
-- [ ] Backend: fix `.env` format (values only, no `KEY=...;` pieces) and check whether the Azure SQL server still exists.
+- [x] Backend: fixed `.env` format (values only). The connection test showed the server is gone.
 - [ ] Scan git history for secrets (gitleaks) and clean it before the first push to my own repo.
 - [ ] English README with an architecture diagram; keep the Spanish one as `README.es.md`.
 - [ ] Ignore editor folders (`.vscode/`, `.idea/`) and `__pycache__/`.
@@ -30,8 +32,7 @@ Later:
 - [ ] Wake word: test openWakeWord on the Pi Zero 2 (CPU use, detection) with a ready-made model.
 - [ ] Wake word: put detection behind a small interface so the engine is swappable and testable.
 - [ ] Wake word: train a custom "Hey Dream" model and remove Porcupine.
-- [ ] Phase 2: pytest tests and GitHub Actions CI.
-- [ ] Phase 3: Azure AI Foundry agent, real Model Context Protocol server, evaluation.
+- [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (draft, needs my review).
 
 ## What I learned
 
