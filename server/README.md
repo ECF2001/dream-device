@@ -59,6 +59,15 @@ Add this to `claude_desktop_config.json`, with your real paths:
 | `list_medications` | `include_inactive` (default false) | All medications with their schedule |
 | `confirm_intake` | `medication_id`, `status` (`taken` / `missed` / `unclear`) | The recorded intake; writes to the database |
 
+## Evaluation set
+
+[`evals/cases.json`](evals/cases.json) lists realistic requests in Spanish ("¿Qué me toca tomar ahora?", "Sí, ya me la tomé") with the tool calls a good agent **must** make, in order, and the tools it must **never** call. For example, asking "¿Ya me tomé la metformina hoy?" must not record an intake.
+
+- `dreamcare_mcp.evals.score(case, calls)` grades the tool calls an agent actually made: pass or fail, with reasons. It is model-agnostic.
+- `tests/test_evals.py` checks the scorer, and replays every case's expected calls against the real server, with the demo data and the case's clock, so the eval set can't drift from the server.
+
+Running a real model against these cases is the next step (Azure AI Foundry agent).
+
 ## Modules
 
 | Module | What it does |
@@ -67,3 +76,4 @@ Add this to `claude_desktop_config.json`, with your real paths:
 | `repository.py` | SQLite access: users, medications, intake log |
 | `seed.py` | Fills a database with fictional demo data |
 | `server.py` | The MCP server: the three tools, time zone conversion, stdio entry point |
+| `evals.py` | Eval case format, loader, and the scorer for an agent's tool calls |
