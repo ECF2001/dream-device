@@ -1,4 +1,6 @@
 # Dream Device  
+[![Server tests](https://github.com/ECF2001/dream-device/actions/workflows/server-tests.yml/badge.svg?branch=main)](https://github.com/ECF2001/dream-device/actions/workflows/server-tests.yml)
+
 ### Un asistente de voz para adultos mayores basado en Raspberry Pi Zero 2  
 
 **Dream Device** es un asistente de voz diseñado para ayudar a adultos mayores en tareas críticas como la toma de medicamentos, recordatorios y comunicación básica.  
