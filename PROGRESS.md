@@ -20,7 +20,8 @@ Working log for the Dream Device improvement project. Newest entries on top.
 
 Phase 1 (safety and cleanup):
 - [ ] Rotate the leaked credentials: OpenAI key, Azure SQL password (if the server still exists). The Picovoice key is dead with the deleted account.
-- [ ] Backend: build the database connection string from `DB_*` variables; call `load_dotenv()` in `create_app()`.
+- [x] Backend: build the database connection string from `DB_*` variables; load `.env` at startup (2026-10-19, local branch `phase1/env-config` in DreamInCode-MCP).
+- [ ] Backend: fix `.env` format (values only, no `KEY=...;` pieces) and check whether the Azure SQL server still exists.
 - [ ] Scan git history for secrets (gitleaks) and clean it before the first push to my own repo.
 - [ ] English README with an architecture diagram; keep the Spanish one as `README.es.md`.
 - [ ] Ignore editor folders (`.vscode/`, `.idea/`) and `__pycache__/`.
@@ -37,4 +38,6 @@ Later:
 - **Rotation beats cleanup.** Once a secret is in a public repo, deleting it from code does not help; only making the old value useless (rotate/revoke) does. Reverting a commit does not remove it from history either.
 - **Environment variables + `.env.example`.** Code is shared, secrets are per machine. `.env` holds real values and is git-ignored; `.env.example` documents which settings exist.
 - **Fail fast.** Check required settings at startup and name what is missing (never the value), instead of failing later with a confusing error.
+- **Import-time side effects.** `mcp/openai_client.py` creates the OpenAI client when it is imported, so `.env` must be loaded before that import, not inside `create_app()`.
+- **ODBC connection strings.** Values like passwords are wrapped in `{}` (with `}` doubled) so special characters don't break the string.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.
