@@ -34,5 +34,7 @@ Work done with an AI coding assistant (Claude Code). I decide the plan, review e
 | 2026-10-19 | Decided to replace Porcupine with openWakeWord | My decision, after comparing options |
 | 2026-10-19 | Designed my own MCP server (tools, data model, test plan): `docs/mcp-design.md` | I chose the direction and approved it; the assistant drafted the document |
 | 2026-10-19 | MCP server skeleton: Python package, pytest setup, GitHub Actions CI workflow | The assistant wrote it with explanations; I reviewed it |
+| 2026-10-19 | Created my public repo, opened and merged PR #1 with CI passing; revoked leaked OpenAI keys | Me |
+| 2026-10-19 | `schedule.py` interface and time-window logic, test-first (3 tests) | The assistant wrote the tests and code with explanations; I followed the red/green steps |
 | 2026-10-19 | Scanned git history for secrets and removed a leaked key from all commits with `git filter-repo`, with backup and verification | The assistant ran it with explanations; I approved each step |
 | 2026-10-19 | Backend (team code): moved hardcoded database credentials to `DB_*` environment variables, load `.env` at startup | I started the change; the assistant wrote the final version and tests, which I reviewed |

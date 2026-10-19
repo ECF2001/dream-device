@@ -20,12 +20,13 @@ Working log for the Dream Device improvement project. Newest entries on top.
 ## Next
 
 Phase 1 (safety and cleanup):
-- [ ] Revoke the leaked OpenAI key (from the old `DreamInCode/.env`). This is the only leaked secret that may still work.
+- [x] Revoked all OpenAI keys (2026-10-19). Every leaked secret is now dead.
 - [x] Azure SQL: the server no longer exists (its name does not resolve in DNS, checked 2026-10-19), so the leaked database credentials are dead. The Picovoice key is dead with the deleted account.
 - [x] Backend: build the database connection string from `DB_*` variables; load `.env` at startup (2026-10-19, local branch `phase1/env-config` in DreamInCode-MCP).
 - [x] Backend: fixed `.env` format (values only). The connection test showed the server is gone.
 - [x] Scanned git history for secrets and cleaned it (2026-10-19): one Picovoice key, replaced with `REMOVED_PICOVOICE_KEY` in all 64 commits using `git filter-repo`. No other secrets found. Backup bundle in `../backups/` (contains the old key: keep local, delete when no longer needed). Removed the `team` remote so old history can't come back by accident.
-- [ ] Create my personal GitHub repo, push, and see CI run.
+- [x] Created my personal repo [ECF2001/dream-device](https://github.com/ECF2001/dream-device) and opened PR #1 (2026-10-19).
+- [ ] See CI go green, merge PR #1, then protect `main` (PR required, CI required, no force push). Remove the workflow's `paths:` filter first, or required checks block non-server PRs.
 - [ ] English README with an architecture diagram; keep the Spanish one as `README.es.md`.
 - [ ] Ignore editor folders (`.vscode/`, `.idea/`) and `__pycache__/`.
 
@@ -35,7 +36,7 @@ Later:
 - [ ] Wake word: train a custom "Hey Dream" model and remove Porcupine.
 - [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (approved 2026-10-19).
   - [x] Step 1: `server/` skeleton, one passing test, GitHub Actions workflow (2026-10-19). The workflow has not run on GitHub yet; add the status badge once the repo is on my account.
-  - [ ] Step 2: `schedule.py`, test-first.
+  - [ ] Step 2: `schedule.py`, test-first. In progress: interface and time-window logic done with 3 tests (2026-10-19). Next tests: inactive medication, wrong weekday, before `start_date`, after `end_date`, window crossing midnight.
 
 ## What I learned
 
@@ -48,4 +49,6 @@ Later:
 - **A smoke test proves the pipeline, not the logic.** The first test only checks the package imports; its job is to show that install, test discovery and CI all work before real tests arrive.
 - **CI basics.** The workflow runs on push and pull request only when `server/` changes, tests three Python versions in a matrix, and has read-only permissions.
 - **Rewriting history.** `git filter-repo --replace-text` rewrites every commit, so all commit hashes change. Back up first (`git bundle`), verify afterwards, and only rewrite history nobody else depends on. It does not help for copies already public (the team repo), which is why rotation comes first.
+- **Test-first loop (red, green, refactor).** Decide the interface, write a test that fails, write only enough code to pass it, then clean up. Every branch of logic exists because a test demanded it.
+- **Test helpers.** A fixed `NOW` keeps tests independent of the real clock; a `make_med(**overrides)` factory makes each test show only the field it is about.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.
