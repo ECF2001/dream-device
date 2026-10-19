@@ -36,7 +36,8 @@ Later:
 - [ ] Wake word: train a custom "Hey Dream" model and remove Porcupine.
 - [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (approved 2026-10-19).
   - [x] Step 1: `server/` skeleton, one passing test, GitHub Actions workflow (2026-10-19). The workflow has not run on GitHub yet; add the status badge once the repo is on my account.
-  - [ ] Step 2: `schedule.py`, test-first. In progress: interface and time-window logic done with 3 tests (2026-10-19). Next tests: inactive medication, wrong weekday, before `start_date`, after `end_date`, window crossing midnight.
+  - [x] Step 2: `schedule.py`, test-first (2026-10-19). 14 tests: time window, inactive, weekdays, date range (parametrized), windows crossing midnight, sorting. Time zone conversion moves to the tools layer (step 4), where the user's zone is known.
+  - [ ] Step 3: `repository.py` with the SQLite schema, a fixture-based in-memory test database, and a seed script.
 
 ## What I learned
 
@@ -51,4 +52,8 @@ Later:
 - **Rewriting history.** `git filter-repo --replace-text` rewrites every commit, so all commit hashes change. Back up first (`git bundle`), verify afterwards, and only rewrite history nobody else depends on. It does not help for copies already public (the team repo), which is why rotation comes first.
 - **Test-first loop (red, green, refactor).** Decide the interface, write a test that fails, write only enough code to pass it, then clean up. Every branch of logic exists because a test demanded it.
 - **Test helpers.** A fixed `NOW` keeps tests independent of the real clock; a `make_med(**overrides)` factory makes each test show only the field it is about.
+- **Change one thing per test.** Start from a case that passes and change a single input, so a failure points at exactly one rule (and the test can't pass for the wrong reason).
+- **Guard tests.** Some tests pass immediately (listed weekday, weekday rules across midnight, sorting); they exist to catch a future change that is too strict or subtly wrong.
+- **`pytest.mark.parametrize`.** One test function, a table of cases with readable `ids`; boundaries (on start date, on end date) are where bugs hide.
+- **Midnight.** A window around 00:05 includes yesterday's 23:55 dose, which must follow yesterday's weekday and date rules.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.

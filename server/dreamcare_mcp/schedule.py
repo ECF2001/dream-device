@@ -55,9 +55,15 @@ def due_medications(
     window = dt.timedelta(minutes=window_minutes)
     due = []
     for med in medications:
-        if not med.active or not _is_scheduled_on(med, now.date()):
+        if not med.active:
             continue
-        scheduled_at = dt.datetime.combine(now.date(), med.time, tzinfo=now.tzinfo)
-        if abs(scheduled_at - now) <= window:
-            due.append(DueMedication(medication=med, scheduled_at=scheduled_at))
+        # Near midnight the window reaches into yesterday or tomorrow, so check the
+        # dose on each of those dates too, using that date's own weekday and range.
+        for day_offset in (-1, 0, 1):
+            day = now.date() + dt.timedelta(days=day_offset)
+            if not _is_scheduled_on(med, day):
+                continue
+            scheduled_at = dt.datetime.combine(day, med.time, tzinfo=now.tzinfo)
+            if abs(scheduled_at - now) <= window:
+                due.append(DueMedication(medication=med, scheduled_at=scheduled_at))
     return sorted(due, key=lambda d: d.scheduled_at)

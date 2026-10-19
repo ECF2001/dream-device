@@ -92,3 +92,39 @@ def test_date_range_limits_when_medication_is_due(start_date, end_date, expected
     due = due_medications([med], NOW)
 
     assert (len(due) == 1) is expected_due
+
+
+def test_late_dose_from_yesterday_is_due_just_after_midnight():
+    med = make_med(time=dt.time(23, 55))
+    tuesday_after_midnight = dt.datetime(2026, 10, 20, 0, 5)
+
+    due = due_medications([med], tuesday_after_midnight)
+
+    assert len(due) == 1
+    assert due[0].scheduled_at == dt.datetime(2026, 10, 19, 23, 55)  # Monday's dose
+
+
+def test_yesterdays_weekday_rules_apply_across_midnight():
+    med = make_med(time=dt.time(23, 55), days=frozenset({"tue"}))  # no Monday dose
+    tuesday_after_midnight = dt.datetime(2026, 10, 20, 0, 5)
+
+    assert due_medications([med], tuesday_after_midnight) == []
+
+
+def test_early_dose_from_tomorrow_is_due_just_before_midnight():
+    med = make_med(time=dt.time(0, 5))
+    monday_before_midnight = dt.datetime(2026, 10, 19, 23, 55)
+
+    due = due_medications([med], monday_before_midnight)
+
+    assert len(due) == 1
+    assert due[0].scheduled_at == dt.datetime(2026, 10, 20, 0, 5)  # Tuesday's dose
+
+
+def test_due_medications_are_sorted_by_scheduled_time():
+    later = make_med(medication_id=1, time=dt.time(8, 10))
+    earlier = make_med(medication_id=2, time=dt.time(7, 55))
+
+    due = due_medications([later, earlier], NOW)
+
+    assert [d.medication.medication_id for d in due] == [2, 1]
