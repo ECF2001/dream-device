@@ -32,6 +32,11 @@ class DueMedication:
     scheduled_at: dt.datetime          # the local date and time this dose was scheduled for
 
 
+def _is_scheduled_on(med: Medication, day: dt.date) -> bool:
+    """True if `med` has a dose on the calendar date `day`."""
+    return WEEKDAYS[day.weekday()] in med.days
+
+
 def due_medications(
     medications: Iterable[Medication],
     now: dt.datetime,
@@ -46,7 +51,7 @@ def due_medications(
     window = dt.timedelta(minutes=window_minutes)
     due = []
     for med in medications:
-        if not med.active:
+        if not med.active or not _is_scheduled_on(med, now.date()):
             continue
         scheduled_at = dt.datetime.combine(now.date(), med.time, tzinfo=now.tzinfo)
         if abs(scheduled_at - now) <= window:

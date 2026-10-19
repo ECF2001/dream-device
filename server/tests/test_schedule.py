@@ -57,3 +57,15 @@ def test_inactive_medication_is_not_due():
     due = due_medications([med], NOW)
 
     assert due == []
+
+
+def test_medication_on_listed_weekday_is_due():
+    med = make_med(days=frozenset({"mon"}))   # NOW is a Monday
+
+    assert len(due_medications([med], NOW)) == 1
+
+
+def test_medication_on_other_weekday_is_not_due():
+    med = make_med(days=frozenset({"tue"}))   # NOW is a Monday
+
+    assert due_medications([med], NOW) == []
