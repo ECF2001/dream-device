@@ -9,10 +9,16 @@ description = "Model Context Protocol server for Dream Device medication reminde
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Emilio Conejo" }]
-dependencies = []
+dependencies = [
+    "mcp>=2.3,<3",                     # official MCP Python SDK (2.x renamed FastMCP to MCPServer)
+    "tzdata; sys_platform == 'win32'", # Windows has no built-in time zone database for zoneinfo
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+
+[project.scripts]
+dreamcare-mcp = "dreamcare_mcp.server:main"
 
 [tool.setuptools.packages.find]
 include = ["dreamcare_mcp*"]
