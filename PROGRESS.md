@@ -38,7 +38,8 @@ Later:
 - [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (approved 2026-10-19).
   - [x] Step 1: `server/` skeleton, one passing test, GitHub Actions workflow (2026-10-19). The workflow has not run on GitHub yet; add the status badge once the repo is on my account.
   - [x] Step 2: `schedule.py`, test-first (2026-10-19). 14 tests: time window, inactive, weekdays, date range (parametrized), windows crossing midnight, sorting. Time zone conversion moves to the tools layer (step 4), where the user's zone is known.
-  - [ ] Step 3: `repository.py` with the SQLite schema, a fixture-based in-memory test database, and a seed script.
+  - [x] Step 3: `repository.py` (SQLite schema, users, medications, intake log) and `seed.py` (fictional demo data), with 17 tests using in-memory database and `tmp_path` fixtures (2026-10-19).
+  - [ ] Step 4: `server.py` with the three MCP tools (FastMCP); time zone conversion; try it with MCP Inspector.
 
 ## What I learned
 
@@ -57,4 +58,7 @@ Later:
 - **Guard tests.** Some tests pass immediately (listed weekday, weekday rules across midnight, sorting); they exist to catch a future change that is too strict or subtly wrong.
 - **`pytest.mark.parametrize`.** One test function, a table of cases with readable `ids`; boundaries (on start date, on end date) are where bugs hide.
 - **Midnight.** A window around 00:05 includes yesterday's 23:55 dose, which must follow yesterday's weekday and date rules.
+- **pytest fixtures.** A fixture prepares what a test needs (a fresh in-memory database); `yield` splits setup from cleanup; fixtures can use other fixtures (`user_id` uses `repo`). Built-ins like `tmp_path` and `capsys` give a temp folder and captured output.
+- **Mutation check.** When "red" was only "module missing", deliberately break the code (`AND` → `OR` in the ownership query) to prove the important test really fails.
+- **Data access boundary.** Only `repository.py` knows SQL; it converts text columns to Python types, enforces ownership (a user can't log intake on another user's medication), and never hides database errors.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.

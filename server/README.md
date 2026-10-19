@@ -11,3 +11,20 @@ python -m venv .venv
 pip install -e ".[dev]"
 pytest
 ```
+
+## Create a demo database
+
+```bash
+python -m dreamcare_mcp.seed            # creates dreamcare.db (git-ignored)
+python -m dreamcare_mcp.seed --reset    # delete and recreate it
+```
+
+The demo data is fictional.
+
+## Modules
+
+| Module | What it does |
+|---|---|
+| `schedule.py` | Pure logic: which medications are due at a given local time |
+| `repository.py` | SQLite access: users, medications, intake log |
+| `seed.py` | Fills a database with fictional demo data |

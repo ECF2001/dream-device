@@ -209,3 +209,6 @@ __marimo__/
 # Editors
 .vscode/
 .idea/
+
+# Local databases
+*.db
