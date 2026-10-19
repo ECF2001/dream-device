@@ -32,4 +32,6 @@ Work done with an AI coding assistant (Claude Code). I decide the plan, review e
 | 2026-10-19 | Audited the three repos for leaked secrets and risky files | Me, guided by the assistant |
 | 2026-10-19 | Moved the Picovoice key and backend URL in `dream.py` to environment variables (`python-dotenv`), added `.env.example` | I wrote the env variable reading and `load_dotenv()`; the assistant wrote the fail-fast check, which I reviewed |
 | 2026-10-19 | Decided to replace Porcupine with openWakeWord | My decision, after comparing options |
+| 2026-10-19 | Designed my own MCP server (tools, data model, test plan): `docs/mcp-design.md` | I chose the direction and approved it; the assistant drafted the document |
+| 2026-10-19 | MCP server skeleton: Python package, pytest setup, GitHub Actions CI workflow | The assistant wrote it with explanations; I reviewed it |
 | 2026-10-19 | Backend (team code): moved hardcoded database credentials to `DB_*` environment variables, load `.env` at startup | I started the change; the assistant wrote the final version and tests, which I reviewed |

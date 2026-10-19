@@ -32,7 +32,9 @@ Later:
 - [ ] Wake word: test openWakeWord on the Pi Zero 2 (CPU use, detection) with a ready-made model.
 - [ ] Wake word: put detection behind a small interface so the engine is swappable and testable.
 - [ ] Wake word: train a custom "Hey Dream" model and remove Porcupine.
-- [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (draft, needs my review).
+- [ ] Phases 2 + 3 merged: build my own DreamCare MCP server test-first (pytest + GitHub Actions CI), then connect an Azure AI Foundry agent. Design: [docs/mcp-design.md](docs/mcp-design.md) (approved 2026-10-19).
+  - [x] Step 1: `server/` skeleton, one passing test, GitHub Actions workflow (2026-10-19). The workflow has not run on GitHub yet; add the status badge once the repo is on my account.
+  - [ ] Step 2: `schedule.py`, test-first.
 
 ## What I learned
 
@@ -41,4 +43,7 @@ Later:
 - **Fail fast.** Check required settings at startup and name what is missing (never the value), instead of failing later with a confusing error.
 - **Import-time side effects.** `mcp/openai_client.py` creates the OpenAI client when it is imported, so `.env` must be loaded before that import, not inside `create_app()`.
 - **ODBC connection strings.** Values like passwords are wrapped in `{}` (with `}` doubled) so special characters don't break the string.
+- **`pyproject.toml` and editable installs.** `pip install -e ".[dev]"` installs my package so tests import it like a real user would, plus the `dev` extras (pytest) that production doesn't need.
+- **A smoke test proves the pipeline, not the logic.** The first test only checks the package imports; its job is to show that install, test discovery and CI all work before real tests arrive.
+- **CI basics.** The workflow runs on push and pull request only when `server/` changes, tests three Python versions in a matrix, and has read-only permissions.
 - **Vendor lock-in is a real risk.** The core feature depended on an outside account I did not control.
