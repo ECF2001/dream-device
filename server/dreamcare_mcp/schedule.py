@@ -46,6 +46,8 @@ def due_medications(
     window = dt.timedelta(minutes=window_minutes)
     due = []
     for med in medications:
+        if not med.active:
+            continue
         scheduled_at = dt.datetime.combine(now.date(), med.time, tzinfo=now.tzinfo)
         if abs(scheduled_at - now) <= window:
             due.append(DueMedication(medication=med, scheduled_at=scheduled_at))

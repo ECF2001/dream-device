@@ -49,3 +49,11 @@ def test_medication_outside_window_is_not_due():
     due = due_medications([med], NOW)     # default window is 15 minutes
 
     assert due == []
+
+
+def test_inactive_medication_is_not_due():
+    med = make_med(active=False)          # exactly at NOW, but switched off
+
+    due = due_medications([med], NOW)
+
+    assert due == []
