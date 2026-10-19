@@ -26,7 +26,8 @@ Phase 1 (safety and cleanup):
 - [x] Backend: fixed `.env` format (values only). The connection test showed the server is gone.
 - [x] Scanned git history for secrets and cleaned it (2026-10-19): one Picovoice key, replaced with `REMOVED_PICOVOICE_KEY` in all 64 commits using `git filter-repo`. No other secrets found. Backup bundle in `../backups/` (contains the old key: keep local, delete when no longer needed). Removed the `team` remote so old history can't come back by accident.
 - [x] Created my personal repo [ECF2001/dream-device](https://github.com/ECF2001/dream-device) and opened PR #1 (2026-10-19).
-- [ ] See CI go green, merge PR #1, then protect `main` (PR required, CI required, no force push). Remove the workflow's `paths:` filter first, or required checks block non-server PRs.
+- [x] CI green; merged PR #1 (skeleton) and PR #2 (actions v7, no `paths:` filter, badge).
+- [x] Protected `main` with a ruleset (2026-10-19): PR required (0 approvals, solo repo), checks `test (3.11/3.12/3.13)` required, no force pushes, no deletion, no bypass.
 - [ ] English README with an architecture diagram; keep the Spanish one as `README.es.md`.
 - [ ] Ignore editor folders (`.vscode/`, `.idea/`) and `__pycache__/`.
 

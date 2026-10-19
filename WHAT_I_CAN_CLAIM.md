@@ -35,6 +35,7 @@ Work done with an AI coding assistant (Claude Code). I decide the plan, review e
 | 2026-10-19 | Designed my own MCP server (tools, data model, test plan): `docs/mcp-design.md` | I chose the direction and approved it; the assistant drafted the document |
 | 2026-10-19 | MCP server skeleton: Python package, pytest setup, GitHub Actions CI workflow | The assistant wrote it with explanations; I reviewed it |
 | 2026-10-19 | Created my public repo, opened and merged PR #1 with CI passing; revoked leaked OpenAI keys | Me |
+| 2026-10-19 | Protected `main` with a GitHub ruleset: PRs and passing CI required, no force pushes or deletion | I chose the rules; the assistant applied them with `gh api` |
 | 2026-10-19 | `schedule.py`: medication scheduling logic (time window, active flag, weekdays, date range, midnight), test-first with 14 pytest tests | The assistant wrote the tests and code step by step with explanations; I followed and reviewed each red/green cycle |
 | 2026-10-19 | Scanned git history for secrets and removed a leaked key from all commits with `git filter-repo`, with backup and verification | The assistant ran it with explanations; I approved each step |
 | 2026-10-19 | Backend (team code): moved hardcoded database credentials to `DB_*` environment variables, load `.env` at startup | I started the change; the assistant wrote the final version and tests, which I reviewed |
