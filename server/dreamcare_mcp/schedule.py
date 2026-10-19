@@ -34,6 +34,10 @@ class DueMedication:
 
 def _is_scheduled_on(med: Medication, day: dt.date) -> bool:
     """True if `med` has a dose on the calendar date `day`."""
+    if med.start_date is not None and day < med.start_date:
+        return False
+    if med.end_date is not None and day > med.end_date:
+        return False
     return WEEKDAYS[day.weekday()] in med.days
 
 

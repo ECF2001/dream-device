@@ -8,6 +8,8 @@ Pattern used here:
 
 import datetime as dt
 
+import pytest
+
 from dreamcare_mcp.schedule import WEEKDAYS, Medication, due_medications
 
 NOW = dt.datetime(2026, 10, 19, 8, 0)  # Monday, 08:00 local time
@@ -69,3 +71,24 @@ def test_medication_on_other_weekday_is_not_due():
     med = make_med(days=frozenset({"tue"}))   # NOW is a Monday
 
     assert due_medications([med], NOW) == []
+
+
+MONDAY = dt.date(2026, 10, 19)  # the date of NOW
+
+
+@pytest.mark.parametrize(
+    ("start_date", "end_date", "expected_due"),
+    [
+        (MONDAY + dt.timedelta(days=1), None, False),   # starts tomorrow
+        (MONDAY, None, True),                           # starts today (inclusive)
+        (None, MONDAY, True),                           # ends today (inclusive)
+        (None, MONDAY - dt.timedelta(days=1), False),   # ended yesterday
+    ],
+    ids=["before-start", "on-start", "on-end", "after-end"],
+)
+def test_date_range_limits_when_medication_is_due(start_date, end_date, expected_due):
+    med = make_med(start_date=start_date, end_date=end_date)
+
+    due = due_medications([med], NOW)
+
+    assert (len(due) == 1) is expected_due
